@@ -1,30 +1,10 @@
 package sorting;
 
-import java.util.Arrays;
-import java.util.Random;
+public class MergeSort {
 
-public class MergeSortTest {
-
-    static int numberOfElements = 10;
-    static int maxValue = 100;
-
-    public static void main(String[] args) {
-        int[] original = createArrayWithRandomValues();
-        // workspace array is used to keep the partial sorted results
-        int[] workspace = new int[original.length];
-        mergeSort(original, workspace, 0, numberOfElements - 1);
-
-        System.out.println("The sorted array is " + Arrays.toString(original));
-    }
-
-    private static int[] createArrayWithRandomValues() {
-        Random random = new Random();
-        int[] original = new int[numberOfElements];
-        for (int i = 0; i < numberOfElements; i++) {
-            original[i] = random.nextInt(maxValue);
-        }
-        System.out.println("The original array is " + Arrays.toString(original));
-        return original;
+    public static void sort(int[] original) {
+        int[] workSpace = new int[original.length];
+        mergeSort(original, workSpace, 0, original.length - 1);
     }
 
     private static void mergeSort(int[] original, int[] workSpace, int lowerBound, int upperBound) {
@@ -66,5 +46,4 @@ public class MergeSortTest {
         // if there are elements left in the right side of the workspace, those
         // are the largest values of the merged array, so no action is required
     }
-
 }
