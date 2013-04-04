@@ -1,8 +1,8 @@
 package benchmark;
 
+import com.google.caliper.Runner;
 import com.google.caliper.SimpleBenchmark;
-import sorting.MergeSort;
-import sorting.ShellSort;
+import sorting.*;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -22,11 +22,23 @@ public class SortingAlgorithmsBenchmark extends SimpleBenchmark {
         }
     }
 
-    public void timeShellSort(int reps) {
+//    public void timeBubbleSort(int reps) {
+//        for (int i = 0; i < reps; i++) {
+//            BubbleSort.sort(values);
+//        }
+//    }
+
+    public void timeInsertionSort(int reps) {
         for (int i = 0; i < reps; i++) {
-            ShellSort.sort(values);
+            InsertionSort.sort(values);
         }
     }
+
+//    public void timeSelectionSort(int reps) {
+//        for (int i = 0; i < reps; i++) {
+//            SelectionSort.sort(values);
+//        }
+//    }
 
     public void timeMergeSort(int reps) {
         for (int i = 0; i < reps; i++) {
@@ -34,10 +46,20 @@ public class SortingAlgorithmsBenchmark extends SimpleBenchmark {
         }
     }
 
+    public void timeShellSort(int reps) {
+        for (int i = 0; i < reps; i++) {
+            ShellSort.sort(values);
+        }
+    }
+
     public void timeArraysSort(int reps) {
         for (int i = 0; i < reps; i++) {
             Arrays.sort(values);
         }
+    }
+
+    public static void main(String[] args) {
+        Runner.main(SortingAlgorithmsBenchmark.class, args);
     }
 
 }
