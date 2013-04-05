@@ -1,14 +1,32 @@
 package graph;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class TopologicalSort {
 
-    public static <T> List<T> sort(DirectedGraph<T> graph) {
-        DirectedGraph<T> reversedGraph = reverseGraph(graph);
+    // using Depth-First Search to find out the sorted dependencies of a given node
+    public static <T> Deque<T> findSortedDependenciesUsingDFS(DirectedGraph<T> graph, T node) {
+        Deque<T> visited = new ArrayDeque<T>();
+        Deque<T> toBeVisited = new ArrayDeque<T>();
+        toBeVisited.push(node);
+
+        while (!toBeVisited.isEmpty()) {
+            T currentNode = toBeVisited.pop();
+            visited.push(currentNode);
+            Set<T> dependencies = graph.edgesFrom(currentNode);
+
+            for (T dependency : dependencies) {
+                if (!visited.contains(dependency)) {
+                    toBeVisited.push(dependency);
+                }
+            }
+        }
+
+        return visited;
+    }
+
+    public static <T> List<T> sortRecursively(DirectedGraph<T> graph) {
+        DirectedGraph<T> reversedGraph = graph.reverse();
 
         List<T> result = new ArrayList<T>();
         Set<T> visited = new HashSet<T>();
@@ -57,24 +75,6 @@ public class TopologicalSort {
 
         result.add(node);
         expanded.add(node);
-    }
-
-    private static <T> DirectedGraph<T> reverseGraph(DirectedGraph<T> graph) {
-        DirectedGraph<T> result = new DirectedGraph<T>();
-
-        // Add all the nodes from the original graph
-        for (T node : graph) {
-            result.addNode(node);
-        }
-
-        // Scan over all the edges in the graph, adding their reverse to the reverse graph.
-        for (T node : graph) {
-            for (T endpoint : graph.edgesFrom(node)) {
-                result.addEdge(endpoint, node);
-            }
-        }
-
-        return result;
     }
 
 }

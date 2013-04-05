@@ -1,62 +1,50 @@
 package graph
 
+import org.junit.Before
 import org.junit.Test
+
+import static graph.TopologicalSort.findSortedDependenciesUsingDFS
 
 class TopologicalSortingAndDirectedGraphTest {
 
-    @Test
-    public void someTest() {
-        def graph = new DirectedGraph<String>()
-        graph.addNode("A");
-        graph.addNode("B");
-        graph.addNode("C");
-        graph.addNode("D");
-        graph.addNode("E");
-        graph.addNode("F");
-        graph.addNode("G");
-        graph.addNode("H");
-        graph.addNode("I");
-        graph.addNode("J");
+    DirectedGraph<String> graph
 
-        graph.addEdge("A", "D");
-        graph.addEdge("A", "E");
-        graph.addEdge("B", "E");
-        graph.addEdge("C", "F");
-        graph.addEdge("D", "G");
-        graph.addEdge("E", "H");
-        graph.addEdge("F", "H");
-        graph.addEdge("G", "H");
+    @Before
+    public void before() {
+        /*  The direction means evaluation direction, which is the reverse of dependency direction
+            In below example, to evaluate D, you need to evaluate A first, which means D depends on A
 
-        def sorted = TopologicalSort.sort(graph)
+              A --> D --> G --> H
+              B --> E -->       H
+              C --> F -->       H
+              I, J
+         */
 
-        println sorted
+        graph = DirectedGraph.Builder.newBuilder()
+            .withNodes(["G", "B", "C", "A", "F", "D", "E", "H", "I", "J"])
+            .withEdges("A", ["D", "E"])
+            .withEdges("B", ["E"])
+            .withEdges("C", ["F"])
+            .withEdges("D", ["G"])
+            .withEdges("E", ["H"])
+            .withEdges("F", ["H"])
+            .withEdges("G", ["H"])
+            .build()
+
     }
 
-    public static void main(String[] args) {
-        DirectedGraph<String> graph = new DirectedGraph<String>()
-        graph.addNode("A");
-        graph.addNode("B");
-        graph.addNode("C");
-        graph.addNode("D");
-        graph.addNode("E");
-        graph.addNode("F");
-        graph.addNode("G");
-        graph.addNode("H");
-        graph.addNode("I");
-        graph.addNode("J");
+    @Test
+    public void canSortADirectedGraphUsingRecursion() {
+        def sorted = TopologicalSort.sortRecursively(graph)
+        println sorted
+        assert sorted == ["A", "D", "B", "E", "C", "F", "G", "H", "I", "J"]
+    }
 
-        graph.addEdge("A", "D");
-        graph.addEdge("A", "E");
-        graph.addEdge("B", "E");
-        graph.addEdge("C", "F");
-        graph.addEdge("D", "G");
-        graph.addEdge("E", "H");
-        graph.addEdge("F", "H");
-        graph.addEdge("G", "H");
+    @Test
+    public void canFindDependenciesGivenANodeUsingDepthFirstSearch() {
+        assert findSortedDependenciesUsingDFS(graph.reverse(), "H").toList() == ["B", "E", "C", "F", "A", "D", "G", "H"]
 
-        List<String> sorted = TopologicalSort.sort(graph)
-
-        System.out.println(sorted)
+        assert findSortedDependenciesUsingDFS(graph.reverse(), "E").toList() == ["A", "B", "E"]
     }
 
 }

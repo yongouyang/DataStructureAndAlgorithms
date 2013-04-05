@@ -7,6 +7,9 @@ public class DirectedGraph<T> implements Iterable<T> {
     // key is a Node, value is a set of Nodes connected by outgoing edges from the key
     private final Map<T, Set<T>> graph = new HashMap<T, Set<T>>();
 
+    private DirectedGraph() {
+    }
+
     public boolean addNode(T node) {
         if (graph.containsKey(node)) {
             return false;
@@ -62,10 +65,61 @@ public class DirectedGraph<T> implements Iterable<T> {
         return graph.isEmpty();
     }
 
+    public DirectedGraph<T> reverse() {
+        DirectedGraph<T> result = new DirectedGraph<T>();
+
+        // Add all the nodes from the original graph
+        for (T node : graph.keySet()) {
+            result.addNode(node);
+        }
+
+        // Scan over all the edges in the graph, adding their reverse to the reverse graph.
+        for (T node : graph.keySet()) {
+            for (T endpoint : edgesFrom(node)) {
+                result.addEdge(endpoint, node);
+            }
+        }
+
+        return result;
+    }
+
     private void validateSourceAndDestinationNodes(T src, T dest) {
         // Confirm both endpoints exist
         if (!graph.containsKey(src) || !graph.containsKey(dest))
             throw new NoSuchElementException("Both nodes must be in the graph.");
+    }
+
+    public static class Builder<T> {
+
+        private Set<T> nodes = new HashSet<T>();
+        private final Map<T, Set<T>> nodeEdges = new HashMap<T, Set<T>>();
+
+
+        public static <T> Builder<T> newBuilder() {
+            return new Builder<T>();
+        }
+
+        public Builder<T> withNodes(Collection<T> nodes) {
+            this.nodes.addAll(nodes);
+            return this;
+        }
+
+        public Builder<T> withEdges(T node, Collection<T> edges) {
+            nodeEdges.put(node, new HashSet<T>(edges));
+            return this;
+        }
+
+        public DirectedGraph<T> build() {
+            DirectedGraph<T> graph = new DirectedGraph<T>();
+            graph.addNodes(nodes);
+            for (Map.Entry<T, Set<T>> entry : nodeEdges.entrySet()) {
+                T currentNode = entry.getKey();
+                for (T edge : entry.getValue()) {
+                    graph.addEdge(currentNode, edge);
+                }
+            }
+            return graph;
+        }
     }
 
 }
